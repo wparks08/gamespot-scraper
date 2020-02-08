@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://loaclhost/gamespot-scraper";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/gamespot-scraper";
 
 // Middleware
 app.use(express.urlencoded({ extended: false }));
@@ -22,11 +22,12 @@ app.engine("handlebars", exphbs(hbrsOptions));
 app.set("view engine", "handlebars");
 
 // Routes
+require("./routes/htmlRoutes")(app);
 
 // Connect to MongoDB
 mongoose.connect(MONGODB_URI);
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}. Visit http://localhost:${PORT}/ in your browser.`)
+    console.log(`Listening on port ${PORT}. Visit http://localhost:${PORT}/ in your browser.`);
 });

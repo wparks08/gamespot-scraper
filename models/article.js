@@ -11,7 +11,11 @@ const articleSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "comment"
         }
-    ]
+    ],
+    saved: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const article = mongoose.model("article", articleSchema);
