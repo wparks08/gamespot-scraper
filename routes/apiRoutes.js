@@ -27,13 +27,20 @@ module.exports = function(app) {
                         }
                     });
             });
-            res.send(200);
+            res.sendStatus(200);
         });
     });
 
     app.get("/api/articles", (req, res) => {
+        let options = {
+            saved: false
+        };
+        if (req.query.saved === "true") {
+            options.saved = true;
+        }
         db.article
-            .find({})
+            .find(options)
+            .sort({ posted: "desc" })
             .then(articles => {
                 res.json(articles);
             })
@@ -45,7 +52,6 @@ module.exports = function(app) {
     app.get("/api/article/:id", (req, res) => {
         db.article
             .findOne({ _id: req.params.id })
-            // .populate("comment")
             .then(result => {
                 res.json(result);
             })
@@ -54,7 +60,19 @@ module.exports = function(app) {
             });
     });
 
-    app.post("/api/article/:id/saveNote", (req, res) => {
+    app.get("/api/article/:id/comments", (req, res) => {
+        db.article
+            .findOne({ _id: req.params.id })
+            .populate("comments")
+            .then(result => {
+                res.json(result.comments);
+            })
+            .catch(err => {
+                res.json(err);
+            });
+    });
+
+    app.post("/api/article/:id/saveComment", (req, res) => {
         db.comment
             .create({ text: req.body.text })
             .then(comment => {
@@ -82,4 +100,29 @@ module.exports = function(app) {
                 res.json(err);
             });
     });
+
+    app.post("/api/article/:articleId/deleteComment/:commentId", (req, res) => {
+        db.article
+            .findOneAndUpdate({ _id: req.params.articleId }, { $pull: { comments: { _id: req.params.commentId } } })
+            .then(() => {
+                return db.comment.findOneAndDelete({ _id: req.params.commentId });
+            })
+            .then(() => {
+                res.sendStatus(200);
+            })
+            .catch(err => {
+                res.json(err);
+            });
+    });
+
+    app.post("/api/article/:id/unsave", (req, res) => {
+        db.article
+            .findOneAndUpdate({ _id: req.params.id }, { $set: { saved: false } }, { new: true })
+            .then(article => {
+                res.json(article);
+            })
+            .catch(err => {
+                res.json(err);
+            });
+    })
 };
