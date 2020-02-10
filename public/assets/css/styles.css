@@ -1,0 +1,10 @@
+.media {
+    border: 1px solid #eee;
+    padding: 5px;
+    border-radius: 6px;
+}
+
+.media img {
+    border-radius: 6px 0 0 6px;
+    margin: -5px;
+}
