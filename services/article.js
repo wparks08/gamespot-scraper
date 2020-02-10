@@ -1,5 +1,10 @@
+const cheerio = require("cheerio");
+const config = require("../config/config.json");
+
 module.exports = {
     buildArticleFromElement: function(element) {
+        let $ = cheerio.load(element);
+
         return {
             title: $(element)
                 .children("a")
@@ -12,7 +17,7 @@ module.exports = {
                 .children(".media-deck")
                 .text(),
             link:
-                gamespotUrl +
+                config.gamespotUrl +
                 $(element)
                     .children("a")
                     .attr("href"),
@@ -23,7 +28,13 @@ module.exports = {
                     .children(".media-meta")
                     .children("time")
                     .attr("datetime")
-            )
+            ),
+            image: $(element)
+                .children("a")
+                .children("figure")
+                .children(".media-img")
+                .children("img")
+                .attr("src")
         };
     }
 };
