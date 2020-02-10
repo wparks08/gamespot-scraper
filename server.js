@@ -2,6 +2,7 @@ const express = require("express");
 const exphbs = require("express-handlebars");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const middleware = require("./routes/middleware");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static("public"));
 app.use(logger("dev"));
+app.use(middleware.setActiveNavbarLink);
 
 // Initialize handlebars
 const hbrsOptions = {
@@ -22,6 +24,7 @@ app.engine("handlebars", exphbs(hbrsOptions));
 app.set("view engine", "handlebars");
 
 // Routes
+require("./routes/apiRoutes")(app);
 require("./routes/htmlRoutes")(app);
 
 // Connect to MongoDB
